@@ -9,12 +9,19 @@
     .run(themeRun);
 
   /** @ngInject */
-  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings) {
+  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, databaseService ) {
     var whatToWait = [
       preloader.loadAmCharts(),
       $timeout(3000)
     ];
 
+
+    var db = new PouchDB( 'http://localhost:5984/mydb', {skipSetup: true});
+    var local = new PouchDB('local_db');
+    console.log( local );
+  //  local.sync(db, {live: true, retry: true}).on('error', console.log.bind(console));
+
+    console.log( databaseService.config );
     var theme = themeLayoutSettings;
     if (theme.blur) {
       if (theme.mobile) {
