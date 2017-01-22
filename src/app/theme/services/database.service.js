@@ -104,12 +104,12 @@
                     if( allEntries[i].id == doc.id ) {
                        allEntries[i] = item;
                        updated = true;
+                       dbchange();
                     }
                  }
                  if( !updated ) {
-
+                    // realy ?? wh .. not in db.. error is nice !
                     allEntries.push( item );
-                    dbchange();
                  }
 
               })
@@ -235,6 +235,8 @@
 
         return '221-' + pad( (currentMax + 1 ), 5 ) + '-01';
      }
+
+     
      function pad(n, width, z) {
         z = z || '0';
         n = n + '';
