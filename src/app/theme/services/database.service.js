@@ -51,11 +51,20 @@
         }
      });*/
      // var db_ = new PouchDB( 'http://localhost:5984/service_request', {auto_compaction: true} );
+     var observerCallbacks = [];
+
+     //call this when you know 'foo' has been changed
+     var notifyObservers = function(){
+        angular.forEach(observerCallbacks, function(callback){
+           callback();
+        });
+     };
 
      var db_ = new PouchDB( 'localDB_221' );
      var docs;
      var allShips = [];
      var allEntries = [];
+     var dbref = 0;
      var statusObject_ = {
         priorities : {},
         vesselIds : {},
@@ -69,7 +78,11 @@
      intiSync();
 
      var service = {
+        dbref : dbref,
         config : config,
+        registerObserverCallback : function(callback){
+           observerCallbacks.push(callback);
+        },
         getDatabase: function() {
            return db_;
         },
@@ -96,6 +109,7 @@
                  if( !updated ) {
 
                     allEntries.push( item );
+                    dbchange();
                  }
 
               })
@@ -116,7 +130,7 @@
 
               .then(function(response) {
                  allEntries.push( item );
-
+                 dbchange();
                  //fetchInitialDocs();
                  return true;
               })
@@ -131,6 +145,7 @@
         },
         reloadAllSerices : function() {
            fetchInitialDocs();
+           dbchange();
            return allEntries;
         },
         allSerices : function() {
@@ -139,6 +154,12 @@
 
      };
 
+     function dbchange() {
+
+        dbref = dbref + 1;
+        console.log( dbref );
+        notifyObservers();
+     }
      function intiSync() {
         var filter= function(doc){
            return doc.vesselId == config.id;
@@ -156,9 +177,11 @@
            .on('change', function (change) {
               //allEntries = [];
               fetchInitialDocs();
+              console.log( 'sync cange' );
               //this.store.dispatch(this.serviceRequestActions.addServiceRequest(change));
            })
            .on('complete', function () {
+              console.log( 'sync complete' );
               fetchInitialDocs();
            })
            .on('active', function () {
@@ -266,6 +289,7 @@
               allEntries.push( asServiceModel(docs[i]) );
            }
            console.log( 'done loading' );
+           dbchange();
         });
      }
      return service;

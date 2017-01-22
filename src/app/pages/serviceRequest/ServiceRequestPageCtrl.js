@@ -11,6 +11,13 @@
   /** @ngInject */
   function ServiceRequestPageCtrl($scope, fileReader, $filter, $uibModal, databaseService) {
 
+    var updateList = function(){
+      console.log( 'exceuted' );
+      $scope.list = databaseService.allSerices();
+      $scope.$apply();
+    };
+    databaseService.registerObserverCallback(updateList);
+    $scope.list = databaseService.allSerices();
 
     $scope.showModal = function (item) {
       $uibModal.open({
@@ -21,8 +28,6 @@
           item.href = link;
         });
     };
-
-    $scope.list = databaseService.allSerices();
 
     $scope.switches = [true, true, false, true, true, false];
   }
