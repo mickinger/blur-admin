@@ -7,7 +7,7 @@
 
   angular.module('BlurAdmin.pages', [
     'ui.router',
-
+    'BlurAdmin.pages.serviceRequest',
     'BlurAdmin.pages.dashboard',
     'BlurAdmin.pages.ui',
     'BlurAdmin.pages.components',

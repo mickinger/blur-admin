@@ -12,16 +12,13 @@
   function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, databaseService ) {
     var whatToWait = [
       preloader.loadAmCharts(),
+      //databaseService.intiSync(),
       $timeout(3000)
     ];
 
+    //console.log( databaseService.getRawDBmodel() );
 
-    var db = new PouchDB( 'http://localhost:5984/mydb', {skipSetup: true});
-    var local = new PouchDB('local_db');
-    console.log( local );
-  //  local.sync(db, {live: true, retry: true}).on('error', console.log.bind(console));
-
-    console.log( databaseService.config );
+    //databaseService.add ( databaseService.getRawDBmodel() );
     var theme = themeLayoutSettings;
     if (theme.blur) {
       if (theme.mobile) {
@@ -43,6 +40,7 @@
     }, 7000);
 
     $rootScope.$baSidebarService = baSidebarService;
+
   }
 
 })();
