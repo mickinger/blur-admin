@@ -60,7 +60,7 @@
         });
      };
 
-     var db_ = new PouchDB( 'localDB_221' );
+     var db_ = new PouchDB( 'localDB_2221' );
      var docs;
      var allShips = [];
      var allEntries = [];
@@ -140,8 +140,8 @@
               });
         },
 
-        getRawDBmodel : function() {
-           return getRawDBmodel();
+        getRawDBmodel : function( idType ) {
+           return getRawDBmodel( idType );
         },
         reloadAllSerices : function() {
            fetchInitialDocs();
@@ -164,7 +164,7 @@
         var filter= function(doc){
            return doc.vesselId == config.id;
         }
-        var externaldb_ = new PouchDB( 'http://localhost:5984/mydb' );
+        var externaldb_ = new PouchDB( 'http://localhost:5984/service_restest' );
         //var externaldb_ = new PouchDB( 'http://192.168.192.31:5984/service_request' );
         db_.sync( externaldb_,
            {
@@ -222,48 +222,44 @@
         return entry;
      }
      function getNextServiceId()  {
-
         var currentMax = 0;
         for (var i = 0; i < allEntries.length; i++) {
-           var id = allEntries[i].id.split('-')[1];
+           var id = allEntries[i]._id;
+           id = id.substring( id.lastIndexOf( "I" ) + 1, id.indexOf( "S" ) );
            var number = parseInt( id );
            if( number > currentMax ) {
               currentMax = number;
            }
-
         }
-
-        return '221-' + pad( (currentMax + 1 ), 5 ) + '-01';
+        console.log( pad( (currentMax + 1 ), 5 ) );
+        return pad( (currentMax + 1 ), 5 );
      }
-
-     
      function pad(n, width, z) {
         z = z || '0';
         n = n + '';
         return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
      }
-     function getRawDBmodel()
+     function getRawDBmodel( type )
      {
-        var date =  new Date();
-        console.log( date );
+        var date = new Date();
         var id = getNextServiceId();
         var today = aDateToString( date );
-        var prefix = 'DA'+ date.getDay() + 'MO' +  date.getMonth() + 'YE' + date.getYear();
+        var prefix = 'D'+ date.getDay() + 'M' +  date.getMonth() + 'Y' + date.getYear();
         return {
-           "_id": prefix + "MM305734000ID" + id + "_SR",
+           "_id": prefix + pad( config.id, 9 ) + 'I' + id + 'S' + pad( config.senderType, 2 )  + type,
            "id": id,
            "status": 0,
            "date": today,
            "priority": 0,
-           "vesselId": 305734000,
-           "vesselName": "WES AMELIE",
-           "type": "service_request",
+           "vesselId": config.id,
+           "vesselName": config.name,
+           "type": type,
            "actPort": "",
            "plannedPort": "",
            "plannedETA": null,
            "nextPort": "",
            "nextETA": null,
-           "sender": "",
+           "sender": config.user.id,
            "unit": 90,
            "nshort": "",
            "noffcomment": "",

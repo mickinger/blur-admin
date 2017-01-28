@@ -9,7 +9,7 @@
     .controller('ServiceRequestPageCtrl', ServiceRequestPageCtrl);
 
   /** @ngInject */
-  function ServiceRequestPageCtrl($scope, fileReader, $filter, $uibModal, databaseService) {
+  function ServiceRequestPageCtrl($scope, fileReader, $filter, $uibModal, databaseService, editableOptions, editableThemes) {
 
     var updateList = function(){
       console.log( 'exceuted' );
@@ -26,6 +26,18 @@
         templateUrl: 'app/pages/serviceRequest/serviceRequestsModal.html'
       }).result.then(function (link) {
           item.href = link;
+        });
+    };
+    
+    $scope.showNewModal = function () {
+      //$scope.item = databaseService.getRawDBmodel( '_SR' );
+      //console.log( $scope.item );
+      $uibModal.open({
+        animation: false,
+        controller: 'ServiceRequestNewModalCtrl',
+        templateUrl: 'app/pages/serviceRequest/edit/serviceRequestsNewModal.html'
+      }).result.then(function (item) {
+          databaseService.add( item );
         });
     };
 

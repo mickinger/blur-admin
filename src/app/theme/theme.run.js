@@ -9,16 +9,52 @@
     .run(themeRun);
 
   /** @ngInject */
-  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, databaseService ) {
+  function themeRun($timeout, $rootScope, layoutPaths, preloader, $q, baSidebarService, themeLayoutSettings, databaseService, toastr ) {
     var whatToWait = [
       preloader.loadAmCharts(),
       //databaseService.intiSync(),
       $timeout(3000)
     ];
 
-    //console.log( databaseService.getRawDBmodel() );
-
-    //databaseService.add ( databaseService.getRawDBmodel() );
+    //console.log( databaseService.getRawDBmodel( '_SR') );
+/*
+    databaseService.getDatabase().get( 'D1M0Y117000456789I00002S01_SR' , {
+        revs: true,
+        open_revs: 'all' // this allows me to also get the removed "docs"
+      } ).then(function(found) {
+        console.log(found);
+      });
+    */
+      databaseService.getDatabase().changes({
+        since: 'now',
+        live: true,
+        include_docs: true
+      }).on('change', function (change) {
+        // change.id contains the doc id, change.doc contains the doc
+        if (change.deleted) {
+          // document was deleted
+        } else {
+          toastr.info( change.doc.nshort, change.doc.vesselName + " changed"  , {
+            "autoDismiss": true,
+            "positionClass": "toast-top-right",
+            "type": "info",
+            "timeOut": "15000",
+            "extendedTimeOut": "2000",
+            "allowHtml": false,
+            "closeButton": true,
+            "tapToDismiss": true,
+            "progressBar": true,
+            "newestOnTop": true,
+            "maxOpened": 0,
+            "preventDuplicates": false,
+            "preventOpenDuplicates": false
+          })
+        }
+      }).on('error', function (err) {
+        // handle errors
+      });
+    
+    //databaseService.add ( databaseService.getRawDBmodel( '_SR' ) );
     var theme = themeLayoutSettings;
     if (theme.blur) {
       if (theme.mobile) {
